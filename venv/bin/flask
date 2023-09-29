@@ -1,4 +1,4 @@
-#!/home/njambi/Desktop/phase4/flask-code-challenge-1/venv/bin/python3
+#!/home/njambi/Desktop/phase4/flask-code-challenge-1/venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys
