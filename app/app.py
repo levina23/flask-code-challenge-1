@@ -1,8 +1,16 @@
-from flask import request, jsonify, make_response
-from app import app
-from app.models import Restaurant, Pizzas, Restaurant_pizza
+from flask import Flask, request, jsonify, make_response
+from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
+from models import db, Restaurant, Pizzas, Restaurant_pizza
 
-from app import db
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///pizza.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.json.compact = False
+
+migrate = Migrate(app, db)
+db.init_app(app)
+
 
 app.route('/',methods=['GET'])
 def index():
@@ -140,5 +148,5 @@ def create_restaurant_pizza():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-# if __name__ == '__main__':
-    # app.run(debug=True)
+if __name__ == '__main__':
+     app.run(debug=True)

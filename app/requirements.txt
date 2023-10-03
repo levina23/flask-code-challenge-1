@@ -1,5 +1,10 @@
-flask-script
-flask
-flask-sqlalchemy
+Faker
+Flask
+Flask-SQLAlchemy
+importlib-metadata
+importlib-resources
+sqlalchemy
+ipdb
+pytest
 flask-migrate
 gunicorn
