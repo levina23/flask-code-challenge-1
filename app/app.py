@@ -12,7 +12,7 @@ migrate = Migrate(app, db)
 db.init_app(app)
 
 
-app.route('/',methods=['GET'])
+@app.route('/',methods=['GET'])
 def index():
     data=jsonify({"message": "Pizza Restaurant domain."})
     return data
