@@ -1,103 +1,198 @@
-# Flask Pizza API
+# Pizza Restaurants
 
-The Flask Pizza API is a versatile web application designed to help you manage pizza restaurants and their menus with ease. Whether you're building a small local pizzeria's website or a comprehensive pizza delivery platform, this API has you covered. It provides full CRUD (Create, Read, Update, Delete) functionality for restaurants and pizzas and allows you to associate pizzas with specific restaurants.
+#### Created By Levina Njambi 23-9-2023
 
-## Table of Contents
 
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Getting Started](#getting-started)
-- [API Endpoints](#api-endpoints)
-- [Examples](#examples)
-- [Contributing](#contributing)
-- [License](#license)
+## Introduction
 
-## Prerequisites
+For this assessment, you'll be working with a Pizza Restaurant domain.
 
-Before you start using the Flask Pizza API, make sure you have the following prerequisites installed on your system:
+The job here is to build out the Flask API to add the functionality described in the deliverables below.
 
-- Python 3.6+ installed on your machine.
-- `pip` package manager installed.
+Test you endpoints as stated below
 
-## Installation
+Running the Flask server and using Postman to make requests
 
-To get the Flask Pizza API up and running on your local system, follow these steps:
+## Models
 
-1. Clone the repository to your local machine:
+You need to create the following relationships:
 
-   ```bash
-   git clone https://github.com/levina23/flask-code-challenge-1
-Navigate to the project directory:
+- A `Restaurant` has many `Pizzas` through `RestaurantPizza`
+- A `Pizza` has many Restaurants through `RestaurantPizza`
+- A `RestaurantPizza` belongs to a `Restaurant` and belongs to a `Pizza`
+  Start by creating the models and migrations for the following database tables:
 
-cd flask-code-challenge-1
-Create a virtual environment:
+## Validations
 
-bash
-python -m venv venv
-Activate the virtual environment:
+Add validations to the `RestaurantPizza` model:
 
-source venv/bin/activate
-Install the required dependencies:
+- Must have a price between 1 and 30
+  Add validations to `Restaurant` Model:
 
-pipenv install && pipenv shell
-Getting Started
-Now that you have the Flask Pizza API installed, let's get started:
+- must have a name less than 50 words in length
+- must have a unique name
 
-Make sure you are in the project directory:
+# Routes
 
-cd flask-code-challenge-1
-Ensure your virtual environment is activated.
+Set up the following routes. Make sure to return JSON data in the format specified along with the appropriate HTTP verb.
 
-Run the initial database migrations:
+## GET /restaurants
 
-flask db upgrade
-This command will create the necessary tables in the SQLite database.
+Return JSON data in the format below:
 
-Start the Flask development server:
+```
+[
+  {
+    "id": 1,
+    "name": "Dominion Pizza",
+    "address": "Good Italian, Ngong Road, 5th Avenue"
+  },
+  {
+    "id": 2,
+    "name": "Pizza Hut",
+    "address": "Westgate Mall, Mwanzi Road, Nrb 100"
+  }
+]
+```
 
-python app.py
-The server will run on http://127.0.0.1:5000/.
+## GET /restaurants/:id
 
-**API Endpoints**
-The Flask Pizza API exposes several endpoints to interact with the system. Below is a list of available endpoints:
+If the `Restaurant` exists, return JSON data in the format below:
 
-GET /restaurants: Retrieve a list of all restaurants.
+```
+{
+  "id": 1,
+  "name": "Dominion Pizza",
+  "address": "Good Italian, Ngong Road, 5th Avenue",
+  "pizzas": [
+    {
+      "id": 1,
+      "name": "Cheese",
+      "ingredients": "Dough, Tomato Sauce, Cheese"
+    },
+    {
+      "id": 2,
+      "name": "Pepperoni",
+      "ingredients": "Dough, Tomato Sauce, Cheese, Pepperoni"
+    }
+  ]
+}
+```
 
-GET /restaurants/<restaurant_id>: Retrieve information about a specific restaurant.
+If the `Restaurant` does not exist, return the following JSON data, along with the appropriate HTTP status code:
 
-POST /restaurants: Create a new restaurant.
+```
+{
+  "error": "Restaurant not found"
+}
+```
 
-PUT /restaurants/<restaurant_id>: Update information about a restaurant.
+## DELETE /restaurants/:id
 
-DELETE /restaurants/<restaurant_id>: Delete a restaurant.
+If the `Restaurant` exists, it should be removed from the database, along with any `RestaurantPizzas` that are associated with it (a `RestaurantPizza` belongs to a `Restaurant`, so you need to delete the `RestaurantPizzas` before the `Restaurant` can be deleted).
 
-GET /pizzas: Retrieve a list of all pizzas.
+After deleting the `Restaurant`, return an empty response body, along with the appropriate HTTP status code.
 
-GET /pizzas/<pizza_id>: Retrieve information about a specific pizza.
+If the `Restaurant` does not exist, return the following JSON data, along with the appropriate HTTP status code:
 
-POST /pizzas: Create a new pizza.
+```
+{
+  "error": "Restaurant not found"
+}
+```
 
-PUT /pizzas/<pizza_id>: Update information about a pizza.
+## GET /pizzas
 
-DELETE /pizzas/<pizza_id>: Delete a pizza.
+Return JSON data in the format below:
 
-GET /restaurants/<restaurant_id>/pizzas: Retrieve a list of pizzas associated with a specific restaurant.
+```
+[
+  {
+    "id": 1,
+    "name": "Cheese",
+    "ingredients": "Dough, Tomato Sauce, Cheese"
+  },
+  {
+    "id": 2,
+    "name": "Pepperoni",
+    "ingredients": "Dough, Tomato Sauce, Cheese, Pepperoni"
+  }
+]
+```
 
-POST /restaurants/<restaurant_id>/pizzas: Add a pizza to a restaurant's menu.
+## POST /restaurant_pizzas
 
-DELETE /restaurants/<restaurant_id>/pizzas/<pizza_id>: Remove a pizza from a restaurant's menu.
+This route should create a new `RestaurantPizza` that is associated with an existing `Pizza` and `Restaurant`. It should accept an object with the following properties in the body of the request:
 
-**Examples**
-Here are some example use cases of the Flask Pizza API:
+```
+{
+  "price": 5,
+  "pizza_id": 1,
+  "restaurant_id": 3
+}
+```
 
-**Create a new restaurant:**
-curl -X POST -H "Content-Type: application/json" -d '{"name": "Pizza Palace", "address": "123 Main St", "phone": "555-123-4567"}' http://127.0.0.1:5000/restaurants
-curl http://127.0.0.1:5000/pizzas
-**Add a pizza to a restaurant's menu:**
-curl -X POST -H "Content-Type: application/json" -d '{"name": "Pepperoni Pizza", "price": 12.99}' http://127.0.0.1:5000/restaurants/1/pizzas
+If the `RestaurantPizza` is created successfully, send back a response with the data related to the `Pizza`:
 
-**Contributing**
-Contributions to this project are welcome! If you'd like to contribute, please reach out to me on my GitHub @levina23.
+```
+{
+  "id": 1,
+  "name": "Cheese",
+  "ingredients": "Dough, Tomato Sauce, Cheese"
+}
+```
 
-License
-This project is licensed under the MIT License.
+If the `RestaurantPizza` is not created successfully, return the following JSON data, along with the appropriate HTTP status code:
+
+```
+{
+  "errors": ["validation errors"]
+}
+```
+
+## Technologies used.
+
+- Python3
+- Flask
+- SQLAlchemy
+
+## Project Setup
+
+1. Clone the repository: `git clone <repository-url>`.
+2. Switch to a virtual environment `pipenv shell`.
+3. Install dependencies: `pipenv install`
+4. Navigate to cloned repository: `cd FLASK-CODE-CHALLENGE-1`.
+5. Navigate to the server folder.
+6. Run the `app.py` script.
+7. Test your endpoints with the given routes in postman.
+    - /restaurants 
+    - /restaurants/{id}
+    - /pizzas - gives you a list of pizzas
+    
+
+
+## Known Bugs
+
+No known bugs at the moment
+
+## Support and contact details 
+
+To make a contribution to the code used or any suggestions you can click on the contact link and email me your suggestions.
+
+- Email: levina.njambi@student.moringaschool.com
+
+## License
+
+Copyright (c) {{ 2023 }}, {{ LEVINA NJAMBI }}
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
+FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
