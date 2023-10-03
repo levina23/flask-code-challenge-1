@@ -1,0 +1,5 @@
+flask-script
+flask
+flask-sqlalchemy
+flask-migrate
+gunicorn
